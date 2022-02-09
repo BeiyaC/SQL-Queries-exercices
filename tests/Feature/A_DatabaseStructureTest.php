@@ -1,7 +1,5 @@
 <?php
 
-
-
 test("Présence de la table 'categories'", function() {
     expect(hasTable('categories'))->toBeTrue();
 })->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `categories` est manquante');
@@ -20,16 +18,15 @@ test("Présence de la table 'orders'", function() {
 
 test("Présence du numéro de commande dans la table 'orders'", function() {
     expect(tableHasColumn('orders', 'number'))->toBeTrue();
-})->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `orders` doit contenir le champs `number`');
+})->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `orders` doit contenir le champ `number`');
 
-test("Présence `customer_id` dans la table 'orders'", function() {
+test("Présence du champ `customer_id` dans la table 'orders'", function() {
     expect(tableHasColumn('orders', 'customer_id'))->toBeTrue();
-})->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `orders` doit contenir le champs `customer_id`');
+})->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `orders` doit contenir le champ `customer_id`');
 
 test("Présence de la date de commande dans la table 'orders'", function() {
     expect(tableHasColumn('orders', 'date'))->toBeTrue();
-})->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `orders` doit contenir le champs `date`');
-
+})->skip(file_exists(dirname(__DIR__) . "../results/database/dump.sql"), 'La table `orders` doit contenir le champ `date`');
 
 test("Présence de la table 'products'", function() {
     expect(hasTable('products'))->toBeTrue();

@@ -16,15 +16,14 @@
         }
     ],
     "require": {
-        "php": "^7.3",
+        "php": "^8.0",
         "illuminate/database": "^8.0",
         "laravel-zero/framework": "^8.0",
-        "spatie/db-dumper": "^2.18"
+        "spatie/db-dumper": "^3.1"
     },
     "require-dev": {
-        "fzaninotto/faker": "^1.9",
-        "mockery/mockery": "^1.4.2",
-        "pestphp/pest": "^0.3"
+        "mockery/mockery": "^1.5",
+        "pestphp/pest": "^1.21"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +38,10 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

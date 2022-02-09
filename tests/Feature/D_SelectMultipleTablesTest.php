@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+
 test('query-5.sql : Liste des produits (nom du produit, quantité et prix unitaire) de la commande portant l\'id 1', function() {
-    $orders_and_products = \Illuminate\Support\Facades\DB::table('order_product')->get();
+    $orders_and_products = DB::table('order_product')->get();
     $expected = $orders_and_products
         ->filter(function ($op) { return $op->order_id === 1; })
         ->map(function ($op) {
-            $product = \Illuminate\Support\Facades\DB::table('products')
+            $product = DB::table('products')
                                             ->where('id', $op->product_id)
                                             ->first();
             return [
@@ -19,12 +21,12 @@ test('query-5.sql : Liste des produits (nom du produit, quantité et prix unitai
     $this->assertCount(
         count($expected),
         $results,
-        'la requête ne retourne pas le bon nombre de résultats'
+        'La requête ne retourne pas le bon nombre de résultats'
     );
 
     foreach ($results as $po) {
         $this->assertObjectHasAttribute('name', $po, "Il manque le nom de l'article");
-        $this->assertObjectHasAttribute('quantity', $po, "Il manque la quantitée");
+        $this->assertObjectHasAttribute('quantity', $po, "Il manque la quantité");
         $this->assertObjectHasAttribute('price', $po, "Il manque le prix unitaire");
     }
 
@@ -46,14 +48,14 @@ test('query-6.sql : Liste de toutes les commandes : Numéro + Prix total de la c
     $results = runQuery(6);
 
     $this->assertCount(
-        \Illuminate\Support\Facades\DB::table('orders')->count(),
-        $expected, // expected must containt the same number of lines that orders
+        DB::table('orders')->count(),
+        $expected,
         'Erreur inconnue - vérifiez vos données'
     );
     $this->assertCount(
-        \Illuminate\Support\Facades\DB::table('orders')->count(),
+        DB::table('orders')->count(),
         $results,
-        'la requête ne retourne pas le bon nombre de résultats'
+        'La requête ne retourne pas le bon nombre de résultats'
     );
 
     $this->assertEquals(
@@ -64,7 +66,6 @@ test('query-6.sql : Liste de toutes les commandes : Numéro + Prix total de la c
 })->skip(!file_exists(dirname(__DIR__)."/../results/queries/query-6.sql")
     , 'Il manque le fichier query-6.sql');
 
-
 test('query-7.sql : Montant total des commandes d’aujourd’hui.', function() {
     $expected = getOrdersCollection();
     $result = runQuery(7);
@@ -72,7 +73,7 @@ test('query-7.sql : Montant total des commandes d’aujourd’hui.', function() 
     $this->assertCount(
         1,
         $result,
-        'la requête doit retourner une seule ligne'
+        'La requête ne doit retourner qu\'une seule ligne'
     );
 
     $total_expected = $expected->filter(function ($commande) { return Carbon\Carbon::parse($commande['date'])->isToday(); })->sum('total');
@@ -83,7 +84,7 @@ test('query-7.sql : Montant total des commandes d’aujourd’hui.', function() 
 })->skip(!file_exists(dirname(__DIR__)."/../results/queries/query-7.sql")
     , 'Il manque le fichier query-7.sql');
 
-test('query-8.sql : Liste des commandes dont le prix est entre 100 et 550 euros', function() {
+test('query-8.sql : Liste des commandes dont le prix est compris entre 100 et 550 euros', function() {
     $expected = getOrdersCollection()->filter(function ($commande) {
         return $commande['total'] > 100 && $commande['total'] < 550;
     });
@@ -91,8 +92,8 @@ test('query-8.sql : Liste des commandes dont le prix est entre 100 et 550 euros'
 
     $this->assertCount(
         $expected->count(),
-        $results, // expected must containt the same number of lines that orders
-        'la requête ne retourne pas le bon nombre de résultats'
+        $results,
+        'La requête ne retourne pas le bon nombre de résultats'
     );
 
     $this->assertEquals(
@@ -104,7 +105,7 @@ test('query-8.sql : Liste des commandes dont le prix est entre 100 et 550 euros'
     , 'Il manque le fichier query-8.sql');
 
 test('query-9.sql : Liste des commandes  (Numéro + Prix total de la commande) du client “Charlize”', function() {
-    $customer = \Illuminate\Support\Facades\DB::table('customers')->where('first_name', 'Charlize')->first();
+    $customer = DB::table('customers')->where('first_name', 'Charlize')->first();
     $expected = getOrdersCollection()->filter(function ($commande) use ($customer) {
         return $commande['customer'] === $customer->id;
     });
@@ -113,8 +114,8 @@ test('query-9.sql : Liste des commandes  (Numéro + Prix total de la commande) d
 
     $this->assertCount(
         $expected->count(),
-        $results, // expected must containt the same number of lines that orders
-        'la requête ne retourne pas le bon nombre de résultats'
+        $results,
+        'La requête ne retourne pas le bon nombre de résultats'
     );
 
     $this->assertEquals(
@@ -126,8 +127,8 @@ test('query-9.sql : Liste des commandes  (Numéro + Prix total de la commande) d
     , 'Il manque le fichier query-9.sql');
 
 test('query-10.sql : Nombre de commandes par client (Prénom du client + Nom du client + Nombre de commandes)', function() {
-    $customers = \Illuminate\Support\Facades\DB::table('customers')->orderBy('first_name')->get();
-    $orders = \Illuminate\Support\Facades\DB::table('orders')->get();
+    $customers = DB::table('customers')->orderBy('first_name')->get();
+    $orders = DB::table('orders')->get();
     $expected = $customers->map(function ($customer) use ($orders) {
         return [
             $customer->first_name,
@@ -141,12 +142,12 @@ test('query-10.sql : Nombre de commandes par client (Prénom du client + Nom du 
 
     $this->assertCount(
         count($expected),
-        $customers, // expected must containt the same number of lines that customers
-        'la requête ne retourne pas le bon nombre de résultats'
+        $customers,
+        'La requête ne retourne pas le bon nombre de résultats'
     );
 
     $results_array = collect($results)->sortBy('first_name')->map(function ($result) {
-        return array_values(get_object_vars($result)); // transform objet to array
+        return array_values(get_object_vars($result));
     })->values()->toArray();
 
     $this->assertEquals(
@@ -155,11 +156,9 @@ test('query-10.sql : Nombre de commandes par client (Prénom du client + Nom du 
     );
 })->skip(!file_exists(dirname(__DIR__)."/../results/queries/query-10.sql")
     , 'Il manque le fichier query-10.sql');
-//
-
 
 test('query-11.sql : Somme des montants de commandes par client (Prénom du client + Nom du client + Somme des montants de commandes)', function() {
-    $customers = \Illuminate\Support\Facades\DB::table('customers')->orderBy('first_name')->get();
+    $customers = DB::table('customers')->orderBy('first_name')->get();
     $orders = getOrdersCollection();
     $expected = $customers->map(function ($customer) use ($orders) {
         return [
@@ -173,12 +172,12 @@ test('query-11.sql : Somme des montants de commandes par client (Prénom du clie
 
     $this->assertCount(
         count($expected),
-        $customers, // expected must containt the same number of lines that customers
-        'la requête ne retourne pas le bon nombre de résultats'
+        $customers,
+        'La requête ne retourne pas le bon nombre de résultats'
     );
 
     $results_array = collect($results)->sortBy('first_name')->map(function ($result) {
-        $array = array_values(get_object_vars($result)); // transform objet to array
+        $array = array_values(get_object_vars($result));
         return [
             $array[0],
             $array[1],
