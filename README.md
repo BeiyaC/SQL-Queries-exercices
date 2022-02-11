@@ -1,6 +1,6 @@
 ## Prérequis
 
-* PHP 7.4
+* PHP 8
 * composer
 * Une base de données MySQL
 
